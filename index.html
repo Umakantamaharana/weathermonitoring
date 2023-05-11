@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="icon" type="image/x-icon" href="weather_icon.png" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+      }
+      body {
+        overflow: hidden;
+      }
+      .chartMenu {
+        width: 100vw;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.4);
+        box-shadow: 0 0 50px #000000;
+        color: rgb(48, 158, 85);
+      }
+      .chartMenu p {
+        padding: 10px;
+        font-size: 20px;
+        background-color: black;
+      }
+      .chartCard {
+        width: 100vw;
+        height: calc(100vh - 40px);
+        background: url(https://img.freepik.com/free-vector/blue-cloudy-daylight-background-weather-design_33099-512.jpg);
+        background-position: center;
+        background-size: cover;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .chartBox {
+        min-width: 30%;
+        width: 70%;
+        padding: 20px;
+        border-radius: 20px;
+        border: solid 3px rgba(54, 162, 235, 1);
+        background: rgba(255, 255, 255, 0.4);
+        box-shadow: 0 0 50px #000000;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chartMenu">
+      <p>
+        <span style="margin-right: 10px"
+          ><img src="weather_icon.png" height="20px" /></span
+        >Weather Monitoring
+      </p>
+    </div>
+    <div class="chartCard">
+      <div class="chartBox">
+        <canvas id="myChart"></canvas>
+      </div>
+    <button onclick="updateChart()">update</button>
+
+    </div>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"
+    ></script>
+    <script>
+      function updateChart() {
+        async function fetchJSON() {
+          const url = "http://localhost:5000/data.json";
+          const res = await fetch(url);
+          const dp = await res.json();
+          return dp;
+        }
+        fetchJSON().then((dp) => {
+          const datapoints = dp;
+          console.log(datapoints);
+          myChart.config.data.datasets[0].data = datapoints;
+          myChart.update();
+        });
+        setTimeout(() => {
+          updateChart();
+        }, 1000);
+      }
+      const data = {
+        labels: ["Light Intensity", "Moisture", "Humidity", "Temperature"],
+        datasets: [
+          {
+            label: "Realtime weather data",
+            data: [10, 10, 10, 10],
+            backgroundColor: [
+              "rgba(255, 26, 104, 0.4)",
+              "rgba(54, 162, 235, 0.4)",
+              "rgba(255, 206, 86, 0.4)",
+              "rgba(75, 192, 192, 0.7)",
+              "rgba(0, 0, 0, 0.2)",
+            ],
+            borderColor: [
+              "rgba(255, 26, 104, 1)",
+              "rgba(54, 162, 235, 1)",
+              "rgba(255, 206, 86, 1)",
+              "rgba(75, 192, 192, 1)",
+              "rgba(0, 0, 0, 1)",
+            ],
+            borderWidth: 1,
+          },
+        ],
+      };
+
+      // config
+      const config = {
+        type: "bar",
+        data,
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
+          },
+        },
+      };
+
+      // render init block
+      const myChart = new Chart(document.getElementById("myChart"), config);
+
+      // Instantly assign Chart.js version
+      const chartVersion = document.getElementById("chartVersion");
+      chartVersion.innerText = Chart.version;
+    </script>
+  </body>
+</html>
